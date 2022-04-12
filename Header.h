@@ -1,352 +1,269 @@
 #pragma once
 #include <iostream>
-#include <locale.h>
 using namespace std;
 
-
-template<typename T>
+template <typename T>
 class LIST
 {
+
 public:
-
-	
-	//Основні методи
-	int END();
-	int FIRST();
-	int MAKENULL();
-	int INSERT(int index, int data);
-	int DELETE(int index);
-	int LOCATE(int data);
-	int RETRIEVE(int position, LIST list);
-	LIST<T> PREVIOUS(int index);
-	void NEXT(int index);
-
-	//Допоміжні методи і оператор
-	void push_front(T data);
-	void push_beak(T data);
-	void PRINTLIST(LIST list);
-	T& operator[](const int index);
-	//Конструктори 
 	LIST();
 	~LIST();
+	int Getsize() { return Size; }
+	void push_back(T data);
+	void push_front(T data);
+	void printlist(LIST<T> lst);
+
 	
+	void MAKENULL();
+	void INSERT(T data, int index);
+	void DELETE(int index);
+	int FIRST();
+	int END();
+	void RETRIEVE(LIST<T> lst,int index);
+	void NEXT(int index);
+	void LOCATE(int index);
+
+
+
+	T& operator[](const int index);
 
 private:
-	template<typename T>
+
+	template <typename T>
 	class Node
 	{
 	public:
 		Node* pNext;
-		Node* pPrev;
 		T data;
-
-
-		Node(T data = T(), Node* pNext = nullptr, Node* pPrev = nullptr)
-		{
-			this->data = data;
-			this->pNext = pNext;
-			this->pPrev = pPrev;
-		}
-
-
+			
+			Node(T data = T(),Node *pNext = nullptr)
+			{
+				this->pNext= pNext;
+				this->data = data;
+			}
 
 	};
 
 	int Size;
-	Node<T>* head;
-	Node<T>* tail;
+	Node<T> *head;
 
 };
+
+
+// Конструктори 
+
 template<typename T>
 LIST<T>::LIST()
 {
 	Size = 0;
 	head = nullptr;
-	tail = nullptr;
+	
+
 }
+
 template<typename T>
 LIST<T>::~LIST()
 {
+	MAKENULL();
 }
 
 
-//Основні методи
+
+//Основні методи 
 
 template<typename T>
-int LIST<T>::END()
-{
-	cout << tail->data << endl;
-	return tail->data;
-}
-
-template<typename T>
-int LIST<T>::FIRST()
-{
-	cout << head->data << endl;
-	return head->data;
-}
-
-template<typename T>
-int LIST<T>::MAKENULL()
+void LIST<T>::MAKENULL()
 {
 	Node<T>* temp;
-	while(Size)
+	while (Size)
 	{
 		temp = head;
 		head = head->pNext;
 		delete temp;
 		Size--;
-	
 	}
-	return 0;
+	
 }
 
 template<typename T>
-int LIST<T>::INSERT(int index, int data)
+void LIST<T>::INSERT(T data, int index)
 {
-	if (index == Size-1)
-	{
-		push_beak(data);
-		return 0;
-	}
-	else if (index == 1)
+	if (index == 0 )
 	{
 		push_front(data);
-		return 0;
 	}
 	else
 	{
-		Node<T>* Ins = head;
-		int i = 1;
-		while (i < index)
+		Node<T>* previous = this->head;
+
+		for (int i = 0; i < index - 1 ; i++)
 		{
-			Ins = Ins->pNext;
-			i++;
+			previous = previous->pNext;
 		}
-		Node<T> *PrevIns = Ins->pPrev;
-		Node<T> *temp = new Node<T>;
-
-		temp->data = data;
-
-		//Калібровка зв'язків
-		if (PrevIns != 0 && Size !=1)
-		{
-			PrevIns->pNext = temp;
-			temp->pNext = Ins;
-			temp->pPrev = PrevIns;
-			Ins->pPrev = temp;
-
-			Size++;
-		}
-
-
-
-	}
-
-
-	return 0;
-}
-
-template<typename T>
-int LIST<T>::DELETE(int index)
-{
-	Node<T>* DEL = head;
-	
-	int i = 0;
-	while (i < index)
-	{
-		DEL = DEL->pNext;
-		i++;
-	}
-
-	Node<T>* DELprev = DEL->pPrev;
-	Node<T>* DELafter = DEL->pNext;
-	//якщо удаляємо не голову
-	if(DELprev != 0 && Size !=1)
-	{
-		DELprev->pNext = DELafter;
-	}
-	//якщо удаляємо не хвіст
-	if(DELafter != 0 && Size !=1)
-	{
-		DELafter->pPrev = DELprev;
-	}
-
-	if (index == 0)
-	{
-		head = DELafter;
-	}
-
-	if (index == Size-1)
-	{
-		tail = DELprev;
-	}
-
-	delete DEL;
-
-	Size--;
-	return 0;
-}
-
-template<typename T>
-int LIST<T>::LOCATE(int data)
-{
-	int position = 0;
-	Node<T>* temp = head;
-	bool reality = false;
-	for (int i = 0; i <Size; i++)
-	{
+		Node<T>* newNode = new Node<T>(data, previous->pNext);
+		previous->pNext = newNode;
 		
-		if (temp->data == data) 
-		{
-			reality = true; 
-			break;
-		}
-		temp = temp->pNext;
-		position++;
-	}
-
-	if(reality == false)
-	{
-		cout << "Таких елементів не занйдено" << endl;
-	}
-	else
-	{
-		cout << position << endl;
-		return position;
-	}
-
-}
-
-template<typename T>
-int LIST<T>::RETRIEVE(int position,LIST list)
-{
-	cout << list[position];
-	return list[position];
-}
-
-template<typename T>
-LIST<T> LIST<T>::PREVIOUS(int index)
-{
-	Node<T>* temp = new Node<T>;
-	temp = head;
-	int i = 0;
-	while (i < index)
-	{
-		temp = temp->pNext;
-		i++;
-	}
+		Size++;
 	
-	cout << temp->pPrev << endl;
-	return temp->pPrev;
+	}
+
+}
+
+template<typename T>
+inline void LIST<T>::DELETE(int index)
+{
+	Node<T>* previous = this->head;
+
+	for (int i = 0; i < index - 1; i++)
+	{
+		previous = previous->pNext;
+	}
+	Node<T>* toDelete = previous->pNext;
+	previous->pNext = toDelete->pNext;
+	delete toDelete;
+	Size--;
+
+}
+
+template<typename T>
+int LIST<T>::FIRST()
+{
+	//виводить значення першого елемента 
+	cout << head->data << endl;
+	return head->data;
+}
+
+template<typename T>
+int LIST<T>::END()
+{
+	int counter = 0;
+	Node<T>* current = this->head;
+	while (current->pNext != nullptr)
+	{
+		current = current->pNext;
+		counter++;
+	}
+	cout << counter << endl;
+	return counter;
+
+}
+
+template<typename T>
+void LIST<T>::RETRIEVE(LIST<T> lst,int index)
+{
+	cout << lst[index] << endl;
 }
 
 template<typename T>
 void LIST<T>::NEXT(int index)
 {
-	Node<T>* temp = new Node<T>;
-	temp = head;
-	int i = 0;
-	while (i < index)
+	if (index==Size)
 	{
-		temp = temp->pNext;
-		i++;
+		cout << "This is the last item on the list " << endl;
+		END();
+	}
+	else
+	{
+		int counter = 0;
+		Node<T>* current = this->head;
+		while (current != nullptr)
+		{
+			if (counter == index)
+			{
+				cout << current->data << endl;
+				
+				return current->data;
+			}
+			current = current->pNext;
+			counter++;
+		}
+
+
 	}
 
-	cout << temp->pNext << endl;
+}
+
+template<typename T>
+void LIST<T>::LOCATE(int index)
+{
+	int counter = 0;
+	Node<T>* current = this->head;
+	while (current != nullptr)
+	{
+		if (current->data == index)
+		{
+			cout << current->data << endl;
+			cout << counter << "  <= counter" << endl;
+			break;
+		}
+		current = current->pNext;
+		counter++;
+	}
 }
 
 
 
-//Допоміжні методи
+
+
+
+
+
+//Додаткові методи 
+template<typename T>
+void LIST<T>::push_back(T data)
+{
+	if (head == nullptr)
+	{
+		head = new Node<T>(data);
+	}
+	else
+	{
+		Node<T>* current = this->head;
+		while (current->pNext != nullptr)
+		{
+			current = current->pNext;
+		}
+		current->pNext = new Node<T>(data);
+
+	}
+
+	Size++;
+}
+
 template<typename T>
 void LIST<T>::push_front(T data)
 {
-	Node<T>* temp = new Node<T>;
-	Node<T>* current = new Node<T>;
-	temp->pPrev = 0;
-	temp->pNext = head;
-	temp->data = data;
-
-	if (Size == 0)
-	{
-		head = tail = temp;
-	}
-	else if (Size != 0)
-	{
-		head = temp;
-		current = head->pNext;
-		current->pPrev = temp;
-	}
+	head = new Node<T>(data, head);
 	Size++;
 }
 
 template<typename T>
-void LIST<T>::push_beak(T data)
+void LIST<T>::printlist(LIST<T> lst)
 {
-	Node<T>* temp = new Node<T>;
-	Node<T>* current = new Node<T>;
-	
-	temp->pPrev = tail;
-	temp->pNext = 0;
-	temp->data = data;
-
-	if (Size == 0)
+	for (int  i = 0; i < lst.Size; i++)
 	{
-		tail = head = temp;
+		cout << lst[i] << endl;
 	}
-	else if (Size != 0)
-	{
-		tail = temp;
-		current = tail->pPrev;
-		current->pNext = tail;
 
-	}
-	Size++;
 }
 
-template<typename T>
-void LIST<T>::PRINTLIST(LIST list)
-{
-	for (int i = 0; i < Size; i++)
-	{
-		cout << list[i] << endl;
-	}
-}
-
-
+//Перегрузка операторів 
 template<typename T>
 T& LIST<T>::operator[](const int index)
 {
-	Node<T>* temp;
-	if (index <= Size / 2)
+	int counter = 0;
+	Node<T>* current = this->head;
+	while (current != nullptr)
 	{
-		temp = this->head;
-		int i = 0;
-		while (i < index)
+		if (counter == index)
 		{
-			temp = temp->pNext;
-			i++;
+			return current->data;
 		}
+		current = current->pNext;
+		counter++;
 	}
-
-	else
-	{
-		temp = this->tail;
-		int i = Size-1;
-		while (i > index)
-		{
-			temp = temp->pPrev;
-			i--;
-		}
-	}
-
-
-	return temp->data;
-	
 
 }
-
-
 
 
