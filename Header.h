@@ -1,269 +1,123 @@
 #pragma once
 #include <iostream>
+#include <string>
+#include <ctime>
 using namespace std;
 
-template <typename T>
-class LIST
+
+class QUEUE
 {
+private:
+	
+	int size, newElement, first;
+	int* queue;
+	bool empty;
+
 
 public:
-	LIST();
-	~LIST();
-	int Getsize() { return Size; }
-	void push_back(T data);
-	void push_front(T data);
-	void printlist(LIST<T> lst);
 
-	
+
+	void create();
+	void Print();
+
 	void MAKENULL();
-	void INSERT(T data, int index);
-	void DELETE(int index);
-	int FIRST();
-	int END();
-	void RETRIEVE(LIST<T> lst,int index);
-	void NEXT(int index);
-	void LOCATE(int index);
+	bool EMPTY();
+	int FRONT();
+	void ENQUEUE();
+	void DEQUEUE();
 
-
-
-	T& operator[](const int index);
-
-private:
-
-	template <typename T>
-	class Node
-	{
-	public:
-		Node* pNext;
-		T data;
-			
-			Node(T data = T(),Node *pNext = nullptr)
-			{
-				this->pNext= pNext;
-				this->data = data;
-			}
-
-	};
-
-	int Size;
-	Node<T> *head;
+	QUEUE();
+	~QUEUE();
 
 };
 
-
-// Конструктори 
-
-template<typename T>
-LIST<T>::LIST()
+QUEUE::QUEUE()
 {
-	Size = 0;
-	head = nullptr;
-	
+	newElement = 0;
+	empty = false;
+	size = 5;
+	srand(time(NULL));
+	first = 0;
+	queue = new int[size];
 
-}
-
-template<typename T>
-LIST<T>::~LIST()
-{
-	MAKENULL();
-}
-
-
-
-//Основні методи 
-
-template<typename T>
-void LIST<T>::MAKENULL()
-{
-	Node<T>* temp;
-	while (Size)
+	for (int i = 0; i < size; i++)
 	{
-		temp = head;
-		head = head->pNext;
-		delete temp;
-		Size--;
-	}
-	
-}
-
-template<typename T>
-void LIST<T>::INSERT(T data, int index)
-{
-	if (index == 0 )
-	{
-		push_front(data);
-	}
-	else
-	{
-		Node<T>* previous = this->head;
-
-		for (int i = 0; i < index - 1 ; i++)
-		{
-			previous = previous->pNext;
-		}
-		Node<T>* newNode = new Node<T>(data, previous->pNext);
-		previous->pNext = newNode;
-		
-		Size++;
-	
+		queue[i] = 1 + rand() % 20;
 	}
 
 }
 
-template<typename T>
-inline void LIST<T>::DELETE(int index)
+QUEUE::~QUEUE()
 {
-	Node<T>* previous = this->head;
+}
 
-	for (int i = 0; i < index - 1; i++)
+
+void QUEUE::Print()
+{
+	cout << "Queue: ";
+	for (int i = 0; i < size; i++)
 	{
-		previous = previous->pNext;
+		cout << queue[i] << " ";
 	}
-	Node<T>* toDelete = previous->pNext;
-	previous->pNext = toDelete->pNext;
-	delete toDelete;
-	Size--;
-
+	cout << endl;	
 }
 
-template<typename T>
-int LIST<T>::FIRST()
-{
-	//виводить значення першого елемента 
-	cout << head->data << endl;
-	return head->data;
-}
+//****************************
 
-template<typename T>
-int LIST<T>::END()
+void QUEUE::MAKENULL()
 {
-	int counter = 0;
-	Node<T>* current = this->head;
-	while (current->pNext != nullptr)
+	for (int i = 0; i < size; i++)
 	{
-		current = current->pNext;
-		counter++;
+		queue[i] = 0;
 	}
-	cout << counter << endl;
-	return counter;
-
+	size = 0;
+	cout << "Queue deleted" << endl;
 }
 
-template<typename T>
-void LIST<T>::RETRIEVE(LIST<T> lst,int index)
+bool QUEUE::EMPTY()
 {
-	cout << lst[index] << endl;
-}
-
-template<typename T>
-void LIST<T>::NEXT(int index)
-{
-	if (index==Size)
+	if (size>0)
 	{
-		cout << "This is the last item on the list " << endl;
-		END();
+		empty = false;
+		return false;
 	}
 	else
 	{
-		int counter = 0;
-		Node<T>* current = this->head;
-		while (current != nullptr)
-		{
-			if (counter == index)
-			{
-				cout << current->data << endl;
-				
-				return current->data;
-			}
-			current = current->pNext;
-			counter++;
-		}
-
-
+		empty = true;
+		return true;
 	}
-
 }
 
-template<typename T>
-void LIST<T>::LOCATE(int index)
+int QUEUE::FRONT()
 {
-	int counter = 0;
-	Node<T>* current = this->head;
-	while (current != nullptr)
+
+	for (int i = 0; i < size; i++)
 	{
-		if (current->data == index)
-		{
-			cout << current->data << endl;
-			cout << counter << "  <= counter" << endl;
-			break;
-		}
-		current = current->pNext;
-		counter++;
+		first++;
 	}
+	first--;
+	cout << "First element: " << queue[first] << endl;
+	first = 0;
+	
+	return queue[first];
 }
 
-
-
-
-
-
-
-
-//Додаткові методи 
-template<typename T>
-void LIST<T>::push_back(T data)
+void QUEUE::ENQUEUE()
 {
-	if (head == nullptr)
-	{
-		head = new Node<T>(data);
-	}
-	else
-	{
-		Node<T>* current = this->head;
-		while (current->pNext != nullptr)
-		{
-			current = current->pNext;
-		}
-		current->pNext = new Node<T>(data);
 
+	cout << "Enter new element: ";
+	cin >> newElement;
+	cout << endl;
+	for (int i = size; i > 0; i--)
+	{
+		queue[i] = queue[i - 1];
 	}
-
-	Size++;
+	queue[0] = newElement;
+	size++;
+	cout << "Element added" << endl;
 }
 
-template<typename T>
-void LIST<T>::push_front(T data)
+void QUEUE::DEQUEUE()
 {
-	head = new Node<T>(data, head);
-	Size++;
+	size--;
 }
-
-template<typename T>
-void LIST<T>::printlist(LIST<T> lst)
-{
-	for (int  i = 0; i < lst.Size; i++)
-	{
-		cout << lst[i] << endl;
-	}
-
-}
-
-//Перегрузка операторів 
-template<typename T>
-T& LIST<T>::operator[](const int index)
-{
-	int counter = 0;
-	Node<T>* current = this->head;
-	while (current != nullptr)
-	{
-		if (counter == index)
-		{
-			return current->data;
-		}
-		current = current->pNext;
-		counter++;
-	}
-
-}
-
-
