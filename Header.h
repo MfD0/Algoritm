@@ -1,80 +1,110 @@
 #pragma once
 #include <iostream>
-#include <string>
 #include <ctime>
 using namespace std;
 
 
-class QUEUE
+class STACK
 {
 private:
-	
-	int size, newElement, first;
-	int* queue;
+
+	int size, newElement;
+	int* stack;
 	bool empty;
 
 
 public:
 
-
-	void create();
+	STACK();
+	~STACK();
 	void Print();
 
+	//**************
+	
 	void MAKENULL();
+	int TOP();
+	void POP();
+	void PUSH();
 	bool EMPTY();
-	int FRONT();
-	void ENQUEUE();
-	void DEQUEUE();
 
-	QUEUE();
-	~QUEUE();
+
 
 };
 
-QUEUE::QUEUE()
+STACK::STACK()
 {
-	newElement = 0;
-	empty = false;
 	size = 5;
-	srand(time(NULL));
-	first = 0;
-	queue = new int[size];
+	newElement = 0;
+	stack = new int[size];
+	empty = true;
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i <size; i++)
 	{
-		queue[i] = 1 + rand() % 20;
+		stack[i] = 1 + rand() % 25;
 	}
 
 }
 
-QUEUE::~QUEUE()
+STACK::~STACK()
 {
+	MAKENULL();
+	delete[] stack;
 }
 
-
-void QUEUE::Print()
+void STACK::Print()
 {
-	cout << "Queue: ";
 	for (int i = 0; i < size; i++)
 	{
-		cout << queue[i] << " ";
+		cout << stack[i] << " ";
 	}
-	cout << endl;	
+	cout << endl;
 }
 
-//****************************
+//***********************
 
-void QUEUE::MAKENULL()
-{
+void STACK::MAKENULL()
+{	
 	for (int i = 0; i < size; i++)
 	{
-		queue[i] = 0;
+		stack[i] = 0;
 	}
 	size = 0;
-	cout << "Queue deleted" << endl;
+	cout << "Steak devastated" << endl;
 }
 
-bool QUEUE::EMPTY()
+int STACK::TOP()
+{
+	cout << "First element: ";
+	cout << stack[0] << endl;
+
+	return stack[0];
+}
+
+void STACK::POP()
+{
+	for (int i = 0; i < size; i++)
+	{
+		stack[i] = stack[i + 1];
+	}
+	size--;
+	cout << "Element removed" << endl;
+}
+
+void STACK::PUSH()
+{
+	cout << "Enter new element: ";
+	cin >> newElement;
+	cout << endl;
+	for (int i = size; i > 0; i--)
+	{
+		stack[i] = stack[i - 1];
+	}
+	stack[0] = newElement;
+	size++;
+	cout << "Element added" << endl;
+}
+
+bool STACK::EMPTY()
 {
 	if (size>0)
 	{
@@ -86,38 +116,7 @@ bool QUEUE::EMPTY()
 		empty = true;
 		return true;
 	}
-}
-
-int QUEUE::FRONT()
-{
-
-	for (int i = 0; i < size; i++)
-	{
-		first++;
-	}
-	first--;
-	cout << "First element: " << queue[first] << endl;
-	first = 0;
 	
-	return queue[first];
-}
 
-void QUEUE::ENQUEUE()
-{
-
-	cout << "Enter new element: ";
-	cin >> newElement;
-	cout << endl;
-	for (int i = size; i > 0; i--)
-	{
-		queue[i] = queue[i - 1];
-	}
-	queue[0] = newElement;
-	size++;
-	cout << "Element added" << endl;
-}
-
-void QUEUE::DEQUEUE()
-{
-	size--;
+	return false;
 }
